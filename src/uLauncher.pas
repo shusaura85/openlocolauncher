@@ -261,8 +261,19 @@ end;
 
 procedure TfrmLauncher.btn_PlayClick(Sender: TObject);
 var path, exe, params: string;
+    same_dir: boolean;
 begin
-path := IncludeTrailingPathDelimiter( cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + cfg.ReadString('LAUNCHER', 'openloco.active.version', '') );
+same_dir := cfg.ReadBool('LAUNCHER', 'openloco.samedir', false);
+
+if same_dir then
+   begin
+   path := IncludeTrailingPathDelimiter( ExtractFilePath(ParamStr(0)) );
+   end
+else
+   begin
+   path := IncludeTrailingPathDelimiter( cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + cfg.ReadString('LAUNCHER', 'openloco.active.version', '') );
+   end;
+
 exe := path + 'openloco.exe';
 
 params := '';
