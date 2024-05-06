@@ -573,6 +573,8 @@ else
           panel_no_openloco.Top := (ClientHeight div 2) - (panel_no_openloco.Height div 2);
           panel_no_openloco.Left := (ClientWidth div 2) - (panel_no_openloco.Width div 2);
           panel_no_openloco.Visible := true;
+
+          btnUpdateOpenLoco.Visible := false;
           end;
        end
    else
@@ -582,8 +584,9 @@ else
        panel_no_openloco.Top := (ClientHeight div 2) - (panel_no_openloco.Height div 2);
        panel_no_openloco.Left := (ClientWidth div 2) - (panel_no_openloco.Width div 2);
        panel_no_openloco.Visible := true;
-       end;
 
+       btnUpdateOpenLoco.Visible := false;
+       end;
 
    end;
 end;
