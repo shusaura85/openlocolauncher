@@ -91,7 +91,7 @@ type
   end;
 
 const
-  LAUNCHER_VERSION = 'v0.1';
+  LAUNCHER_VERSION = 'v0.2';
 
 var
   frmLauncher: TfrmLauncher;
@@ -248,6 +248,8 @@ cfg.WriteString(s, 'updated', obj.O['assets'].AsArray[0].S['updated_at']);
 cfg.WriteString(s, 'install_path', cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['name'] + '\' );
 cfg.WriteBool(s, 'is_prelease', obj.AsObject.B['prerelease']);
 
+// update current version
+openloco_cur_ver := obj.AsObject.S['name'];
 frm.Free;
 
 panel_no_openloco.Visible := false;
@@ -455,11 +457,11 @@ if not no_check then
   end;
 
 
-btn_dl_openloco.Caption := 'Download OpenLoco '+ obj.AsObject.S['name'];
+btn_dl_openloco.Caption := 'Download OpenLoco '+ openloco_new_ver;
 btn_dl_openloco.UpdateImgBtn;
 
 btn_play.Left := (ClientWidth div 2) - (btn_play.Width div 2);
-btn_play.Caption := 'Play OpenLoco '+ obj.AsObject.S['name'];
+btn_play.Caption := 'Play OpenLoco '+ openloco_cur_ver;
 btn_play.UpdateImgBtn;
 
 if openloco_cur_ver <> openloco_new_ver then btnUpdateOpenLoco.Visible := true

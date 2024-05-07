@@ -1463,7 +1463,7 @@ object frmLauncher: TfrmLauncher
     Enabled = True
     Visible = False
     OnClick = btn_launcher_updateClick
-    Caption = 'Update available'
+    Caption = 'Update launcher'
     CaptionShow = True
     CaptionPen.Style = psClear
     CaptionPen.Width = 0
@@ -1639,9 +1639,9 @@ object frmLauncher: TfrmLauncher
       Pen.Width = 2
     end
     object Label2: TLabel
-      Left = 9
+      Left = 20
       Top = 45
-      Width = 464
+      Width = 440
       Height = 101
       Anchors = [akLeft, akTop, akRight]
       AutoSize = False
