@@ -43,6 +43,11 @@ type
     btn_options: TShuImgBtn;
     btn_launcher_update: TShuImgBtn;
     btnUpdateOpenLoco: TShuImgBtn;
+    panel_no_locomotion: TPanel;
+    Shape3: TShape;
+    lbl_no_locomotion_title: TLabel;
+    Shape4: TShape;
+    lbl_no_locomotion_text: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -536,6 +541,12 @@ else
    lbl_locomotion_path.Font.Style := [fsBold];
 
    btn_play.Visible := false;
+   btnUpdateOpenLoco.Visible := false;
+
+   panel_no_locomotion.Visible := true;
+   panel_no_locomotion.Top := (ClientHeight div 2) - (panel_no_locomotion.Height div 2);
+   panel_no_locomotion.Left := (ClientWidth div 2) - (panel_no_locomotion.Width div 2);
+   exit; // don't go pass this step
    end;
 
 // check if launcher is placed in the same dir as the game

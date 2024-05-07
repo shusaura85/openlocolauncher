@@ -1669,6 +1669,66 @@ object frmLauncher: TfrmLauncher
       CaptionFont.Style = []
     end
   end
+  object panel_no_locomotion: TPanel
+    Left = 702
+    Top = 198
+    Width = 480
+    Height = 227
+    BevelOuter = bvNone
+    Caption = 'OpenLoco not found'
+    TabOrder = 3
+    Visible = False
+    DesignSize = (
+      480
+      227)
+    object Shape3: TShape
+      Left = 0
+      Top = 0
+      Width = 480
+      Height = 25
+      Align = alTop
+      Brush.Color = 176
+      Pen.Color = clMaroon
+      Pen.Width = 2
+      ExplicitWidth = 329
+    end
+    object lbl_no_locomotion_title: TLabel
+      Left = 5
+      Top = 2
+      Width = 469
+      Height = 19
+      Alignment = taCenter
+      Anchors = [akLeft, akTop, akRight]
+      AutoSize = False
+      Caption = 'Locomotion not found!'
+      Layout = tlCenter
+    end
+    object Shape4: TShape
+      Left = 0
+      Top = 25
+      Width = 480
+      Height = 202
+      Margins.Top = 20
+      Align = alClient
+      Brush.Color = 10855889
+      Pen.Color = clMaroon
+      Pen.Width = 2
+    end
+    object lbl_no_locomotion_text: TLabel
+      Left = 20
+      Top = 45
+      Width = 440
+      Height = 148
+      Anchors = [akLeft, akTop, akRight]
+      AutoSize = False
+      Caption = 
+        'Launcher was unable to locate your Locomotion install!'#13#10#13#10'OpenLo' +
+        'co requires an original installation of Locomotion present on yo' +
+        'ur system in order to work.'#13#10#13#10'Please install Locomotion either ' +
+        'from GoG or Steam (or CD) before starting the launcher.'
+      WordWrap = True
+    end
+  end
   object IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL
     MaxLineAction = maException
     Port = 0
