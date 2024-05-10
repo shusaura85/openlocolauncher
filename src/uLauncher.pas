@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.jpeg, Vcl.ExtCtrls, System.IOUtils,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.jpeg, Vcl.ExtCtrls, System.IOUtils, System.Math,
   Vcl.Imaging.pngimage, Vcl.StdCtrls, Vcl.Buttons, Vcl.ComCtrls, System.DateUtils,
   IdHeaderList, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, IdBaseComponent,
   IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,
@@ -28,8 +28,8 @@ type
     lbl_latest_ver: TLabel;
     IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
     IdHTTP1: TIdHTTP;
-    img_pb: TImage;
-    Image1: TImage;
+    img_train: TImage;
+    img_train_tracks: TImage;
     LocoAnimationTimer: TTimer;
     btn_close: TShuImgBtn;
     btn_minimize: TShuImgBtn;
@@ -66,6 +66,7 @@ type
     procedure btn_dl_openlocoClick(Sender: TObject);
     procedure btn_PlayClick(Sender: TObject);
     procedure btn_launcher_updateClick(Sender: TObject);
+    procedure btn_optionsClick(Sender: TObject);
   private
     { Private declarations }
     latest_json : string;
@@ -97,6 +98,7 @@ type
 
 const
   LAUNCHER_VERSION = 'v0.2';
+  RES_TRAIN_COUNT = 5;      // how many train images are available (res PNG TRAIN_x)
 
 var
   frmLauncher: TfrmLauncher;
@@ -105,7 +107,7 @@ implementation
 
 {$R *.dfm}
 
-uses uDownloader;
+uses uDownloader, uOptions;
 
 procedure TfrmLauncher.LoadFonts();  // Note: using "1" to refer to Font #1
 var
@@ -184,9 +186,15 @@ begin
 end;
 
 procedure TfrmLauncher.LocoAnimationTimerTimer(Sender: TObject);
+var train_no:integer;
 begin
-img_pb.Left := img_pb.Left + 3;
-if img_pb.Left >= ClientWidth + img_pb.Width then img_pb.Left := 0 - img_pb.Width - 20;
+img_train.Left := img_train.Left + 3;
+if img_train.Left >= ClientWidth + img_train.Width then
+   begin
+   img_train.Left := 0 - img_train.Width - 20;
+   train_no := System.Math.RandomRange(1, RES_TRAIN_COUNT+1);
+   img_train.Picture.LoadFromPNGResourceName(0, 'TRAIN_'+IntToStr(train_no));
+   end;
 
 end;
 
@@ -258,12 +266,22 @@ openloco_cur_ver := obj.AsObject.S['name'];
 frm.Free;
 
 panel_no_openloco.Visible := false;
+
 btn_play.Visible := true;
+btn_play.Caption := 'Play OpenLoco '+openloco_cur_ver;
+btn_play.UpdateImgBtn;
+
+btnUpdateOpenLoco.Visible := false;
 end;
 
 procedure TfrmLauncher.btn_launcher_updateClick(Sender: TObject);
 begin
 ShellExecute(0, 'open', 'https://github.com/shusaura85/openlocolauncher/releases/latest', nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TfrmLauncher.btn_optionsClick(Sender: TObject);
+begin
+frmOptions.ShowModal;
 end;
 
 procedure TfrmLauncher.btn_PlayClick(Sender: TObject);
@@ -319,8 +337,12 @@ var obj:ISuperObject;
     utime: Int64;
     no_check: boolean;
     s: string;
+    train_no: integer;
 begin
 LoadFonts();
+
+Randomize;
+train_no := System.Math.RandomRange(1, RES_TRAIN_COUNT+1);
 
 // make sure launcher config path exists
 if not DirectoryExists(get_launcher_config_path()) then ForceDirectories(get_launcher_config_path());
@@ -331,6 +353,9 @@ img_BG.Picture.LoadFromPNGResourceName(0, 'BG');
 
 img_logo.Picture.LoadFromPNGResourceName(0, 'OPENLOCO');
 img_logo_title.Picture.LoadFromPNGResourceName(0, 'OPENLOCO');
+
+img_train_tracks.Picture.LoadFromPNGResourceName(0, 'TRACKS');
+img_train.Picture.LoadFromPNGResourceName(0, 'TRAIN_'+IntToStr(train_no));
 
 btn_close.LoadPNGFromResource('BTN_TB_UP', bsUp);
 btn_close.LoadPNGFromResource('BTN_TB_DOWN', bsDown);
