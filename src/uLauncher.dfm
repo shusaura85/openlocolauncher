@@ -121,7 +121,7 @@ object frmLauncher: TfrmLauncher
     ExplicitTop = 627
   end
   object btn_Play: TShuImgBtn
-    Left = 203
+    Left = 182
     Top = 344
     Width = 440
     Height = 50
@@ -190,6 +190,26 @@ object frmLauncher: TfrmLauncher
     CaptionFont.Height = -16
     CaptionFont.Name = 'Onesize'
     CaptionFont.Style = []
+  end
+  object lbl_autostart: TLabel
+    Left = 182
+    Top = 304
+    Width = 440
+    Height = 34
+    Cursor = crHandPoint
+    Alignment = taCenter
+    Anchors = [akLeft, akTop, akRight]
+    AutoSize = False
+    Caption = 'Autostart in x seconds ...'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 16711808
+    Font.Height = -21
+    Font.Name = 'Onesize'
+    Font.Style = []
+    ParentFont = False
+    Layout = tlCenter
+    Visible = False
+    OnClick = lbl_autostartClick
   end
   object panel_titlebar: TPanel
     Left = 0
@@ -469,6 +489,12 @@ object frmLauncher: TfrmLauncher
     Interval = 16
     OnTimer = LocoAnimationTimerTimer
     Left = 16
+    Top = 376
+  end
+  object timerAutostart: TTimer
+    Enabled = False
+    OnTimer = timerAutostartTimer
+    Left = 128
     Top = 376
   end
 end

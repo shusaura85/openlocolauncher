@@ -48,6 +48,8 @@ type
     lbl_no_locomotion_title: TLabel;
     Shape4: TShape;
     lbl_no_locomotion_text: TLabel;
+    lbl_autostart: TLabel;
+    timerAutostart: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -67,6 +69,8 @@ type
     procedure btn_PlayClick(Sender: TObject);
     procedure btn_launcher_updateClick(Sender: TObject);
     procedure btn_optionsClick(Sender: TObject);
+    procedure timerAutostartTimer(Sender: TObject);
+    procedure lbl_autostartClick(Sender: TObject);
   private
     { Private declarations }
     latest_json : string;
@@ -74,6 +78,8 @@ type
 
     openloco_cur_ver: string;
     openloco_new_ver: string;
+
+    autostart_timer: integer;
 
     // Font handles
     ttf_title: NativeUInt;
@@ -97,7 +103,7 @@ type
   end;
 
 const
-  LAUNCHER_VERSION = 'v0.2';
+  LAUNCHER_VERSION = 'v0.6';
   RES_TRAIN_COUNT = 5;      // how many train images are available (res PNG TRAIN_x)
 
 var
@@ -183,6 +189,18 @@ begin
     ReleaseCapture;
     Perform(WM_SYSCOMMAND, SC_DRAGMOVE, 0);
   end;
+end;
+
+procedure TfrmLauncher.timerAutostartTimer(Sender: TObject);
+begin
+autostart_timer := autostart_timer - 1;
+if autostart_timer > 0 then lbl_autostart.Caption := 'Autostarting in '+IntToStr(autostart_timer)+' seconds...'
+else
+  begin
+  timerAutostart.Enabled := false;
+  btn_PlayClick(Sender);
+  end;
+
 end;
 
 procedure TfrmLauncher.LocoAnimationTimerTimer(Sender: TObject);
@@ -280,13 +298,22 @@ ShellExecute(0, 'open', 'https://github.com/shusaura85/openlocolauncher/releases
 end;
 
 procedure TfrmLauncher.btn_optionsClick(Sender: TObject);
+var frm:TfrmOptions;
 begin
-frmOptions.ShowModal;
+if timerAutostart.Enabled then
+   begin
+   timerAutostart.Enabled := false;
+   lbl_autostart.Visible := false;
+   end;
+frm := TfrmOptions.Create(frmLauncher);
+frm.ShowModal;
+frm.Free;
 end;
 
 procedure TfrmLauncher.btn_PlayClick(Sender: TObject);
-var path, exe, params: string;
+var path, exe, params, s: string;
     same_dir: boolean;
+    openmode: integer;
 begin
 same_dir := cfg.ReadBool('LAUNCHER', 'openloco.samedir', false);
 
@@ -302,10 +329,40 @@ else
 exe := path + 'openloco.exe';
 
 params := '';
-if cfg.ReadBool('LAUNCHER', 'openloco.intro.active', false) = true then params := '--intro';
+if cfg.ReadBool('LAUNCHER', 'openloco.intro.enabled', false) = true then params := '--intro';
 
+if cfg.ReadBool('LAUNCHER', 'openloco.logs.use_custom', false) then
+   begin
+   s := '"';
+   if cfg.ReadBool('LAUNCHER', 'openloco.logs.info', true) then
+      begin
+      if s = '"' then s := s + 'info'
+                 else s := s + ', info';
+      end;
+   if cfg.ReadBool('LAUNCHER', 'openloco.logs.warning', true) then
+      begin
+      if s = '"' then s := s + 'warning'
+                 else s := s + ', warning';
+      end;
+   if cfg.ReadBool('LAUNCHER', 'openloco.logs.error', true) then
+      begin
+      if s = '"' then s := s + 'error'
+                 else s := s + ', error';
+      end;
+   if cfg.ReadBool('LAUNCHER', 'openloco.logs.verbose', false) then
+      begin
+      if s = '"' then s := s + 'verbose'
+                 else s := s + ', verbose';
+      end;
+   s := s+ '"';
 
-ShellExecute(0,'open',PChar(exe),PChar(params), PChar(ExtractFilePath(exe)), SW_SHOWNORMAL);
+   params := params + ' --log_levels '+s;
+   end;
+
+openmode := SW_SHOWNORMAL;
+if cfg.ReadBool('LAUNCHER', 'openloco.console.minimized', false) then openmode:= SW_SHOWMINIMIZED;
+
+ShellExecute(0,'open',PChar(exe),PChar(params), PChar(ExtractFilePath(exe)), openmode);
 Close;
 end;
 
@@ -624,6 +681,7 @@ else
           panel_no_openloco.Visible := true;
 
           btnUpdateOpenLoco.Visible := false;
+          exit;
           end;
        end
    else
@@ -635,8 +693,17 @@ else
        panel_no_openloco.Visible := true;
 
        btnUpdateOpenLoco.Visible := false;
+       exit;
        end;
 
+   end;
+
+if ( cfg.ReadBool('LAUNCHER', 'openloco.autostart.enabled', false) ) AND (openloco_cur_ver = openloco_new_ver) then
+   begin
+   autostart_timer := cfg.ReadInteger('LAUNCHER', 'openloco.autostart.time', 5);
+   lbl_autostart.Visible := true;
+   lbl_autostart.Caption := 'Autostarting in '+IntToStr(autostart_timer)+' seconds...';
+   timerAutostart.Enabled := true;
    end;
 end;
 
@@ -671,6 +738,12 @@ begin
 
 //ProgressBar1.Visible := false;
 Application.ProcessMessages;
+end;
+
+procedure TfrmLauncher.lbl_autostartClick(Sender: TObject);
+begin
+timerAutostart.Enabled := false;
+lbl_autostart.Visible := false;
 end;
 
 end.

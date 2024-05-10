@@ -3,7 +3,7 @@ object frmOptions: TfrmOptions
   Top = 0
   BorderStyle = bsNone
   Caption = 'frmOptions'
-  ClientHeight = 452
+  ClientHeight = 415
   ClientWidth = 669
   Color = clBtnFace
   DoubleBuffered = True
@@ -17,7 +17,7 @@ object frmOptions: TfrmOptions
   OnCreate = FormCreate
   DesignSize = (
     669
-    452)
+    415)
   PixelsPerInch = 96
   TextHeight = 13
   object shape_titlebar: TShape
@@ -37,7 +37,7 @@ object frmOptions: TfrmOptions
     Left = 0
     Top = 35
     Width = 669
-    Height = 417
+    Height = 380
     Align = alClient
     Brush.Color = 15180635
     Pen.Color = 6776659
@@ -89,10 +89,12 @@ object frmOptions: TfrmOptions
   end
   object btn_save: TShuImgBtn
     Left = 453
-    Top = 398
+    Top = 361
     Width = 200
     Height = 40
+    Anchors = [akLeft, akBottom]
     Enabled = True
+    OnClick = btn_saveClick
     Caption = 'Save'
     CaptionShow = True
     CaptionPen.Style = psClear
@@ -103,12 +105,13 @@ object frmOptions: TfrmOptions
     CaptionFont.Height = -21
     CaptionFont.Name = 'Onesize'
     CaptionFont.Style = []
+    ExplicitTop = 398
   end
   object GroupBox1: TGroupBox
     Left = 16
-    Top = 264
+    Top = 184
     Width = 637
-    Height = 121
+    Height = 153
     Caption = ' OpenLoco options '
     Color = 15180635
     Font.Charset = DEFAULT_CHARSET
@@ -122,29 +125,38 @@ object frmOptions: TfrmOptions
     TabOrder = 0
     DesignSize = (
       637
-      121)
-    object CheckBox1: TCheckBox
+      153)
+    object chk_openloco_intro_enabled: TCheckBox
       Left = 24
       Top = 24
       Width = 597
       Height = 25
+      Cursor = crHandPoint
+      Hint = 
+        'If enabled, when starting OpenLoco it will show the original Loc' +
+        'omotion startup screens'
       Alignment = taLeftJustify
       Anchors = [akLeft, akTop, akRight]
-      Caption = 'Run the game intro'
+      Caption = 'Show the game intro'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'Onesize'
       Font.Style = []
       ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
-      ExplicitWidth = 561
     end
-    object CheckBox2: TCheckBox
+    object chk_openloco_override_loglevel: TCheckBox
       Left = 24
-      Top = 55
+      Top = 87
       Width = 597
       Height = 25
+      Cursor = crHandPoint
+      Hint = 
+        'By enabling this option you can change what information OpenLoco' +
+        ' will log.'
       Alignment = taLeftJustify
       Anchors = [akLeft, akTop, akRight]
       Caption = 'Override log level (default: info, warning, error)'
@@ -154,16 +166,18 @@ object frmOptions: TfrmOptions
       Font.Name = 'Onesize'
       Font.Style = []
       ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
-      ExplicitWidth = 561
     end
-    object CheckBox3: TCheckBox
+    object chk_openloco_log_info: TCheckBox
       Left = 24
-      Top = 86
+      Top = 118
       Width = 130
       Height = 17
+      Cursor = crHandPoint
       Alignment = taLeftJustify
-      Caption = 'Info'
+      Caption = 'Info . . . . . . .'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -172,13 +186,14 @@ object frmOptions: TfrmOptions
       ParentFont = False
       TabOrder = 2
     end
-    object CheckBox4: TCheckBox
+    object chk_openloco_log_warning: TCheckBox
       Left = 176
-      Top = 86
+      Top = 118
       Width = 130
       Height = 17
+      Cursor = crHandPoint
       Alignment = taLeftJustify
-      Caption = 'Warning'
+      Caption = 'Warning . . .'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -187,13 +202,14 @@ object frmOptions: TfrmOptions
       ParentFont = False
       TabOrder = 3
     end
-    object CheckBox5: TCheckBox
+    object chk_openloco_log_error: TCheckBox
       Left = 336
-      Top = 86
+      Top = 118
       Width = 130
       Height = 17
+      Cursor = crHandPoint
       Alignment = taLeftJustify
-      Caption = 'Error'
+      Caption = 'Error . . . . .'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -202,13 +218,14 @@ object frmOptions: TfrmOptions
       ParentFont = False
       TabOrder = 4
     end
-    object CheckBox6: TCheckBox
+    object chk_openloco_log_verbose: TCheckBox
       Left = 491
-      Top = 86
+      Top = 118
       Width = 130
       Height = 17
+      Cursor = crHandPoint
       Alignment = taLeftJustify
-      Caption = 'Verbose'
+      Caption = 'Verbose . . .'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -217,12 +234,34 @@ object frmOptions: TfrmOptions
       ParentFont = False
       TabOrder = 5
     end
+    object chk_openloco_minimized: TCheckBox
+      Left = 24
+      Top = 55
+      Width = 597
+      Height = 25
+      Cursor = crHandPoint
+      Hint = 
+        'If enabled, when starting OpenLoco, the console window will be m' +
+        'inimized by default'
+      Alignment = taLeftJustify
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Start with the console hidden'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Onesize'
+      Font.Style = []
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 6
+    end
   end
   object GroupBox2: TGroupBox
     Left = 16
     Top = 56
     Width = 637
-    Height = 169
+    Height = 105
     Caption = ' Launcher options '
     Color = 15180635
     Font.Charset = DEFAULT_CHARSET
@@ -236,23 +275,32 @@ object frmOptions: TfrmOptions
     TabOrder = 1
     DesignSize = (
       637
-      169)
-    object Label1: TLabel
+      105)
+    object lbl_time_autostart: TLabel
       Left = 24
       Top = 55
       Width = 549
       Height = 28
+      Hint = 
+        'How long will the launcher wait before automatically starting th' +
+        'e game'
       Anchors = [akLeft, akTop, akRight]
       AutoSize = False
       Caption = 'Time in seconds before automatically starting the game'
+      ParentShowHint = False
+      ShowHint = True
       Layout = tlCenter
       ExplicitWidth = 513
     end
-    object CheckBox7: TCheckBox
+    object chk_autostart: TCheckBox
       Left = 24
       Top = 24
       Width = 597
       Height = 25
+      Cursor = crHandPoint
+      Hint = 
+        'If enabled, the launcher will automatically start the game if th' +
+        'ere are no updates available (will apply next time you start)'
       Alignment = taLeftJustify
       Anchors = [akLeft, akTop, akRight]
       Caption = 'Automatically start OpenLoco if no updates available'
@@ -262,10 +310,11 @@ object frmOptions: TfrmOptions
       Font.Name = 'Onesize'
       Font.Style = []
       ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
-      ExplicitWidth = 561
     end
-    object SpinEdit1: TSpinEdit
+    object edit_time_autostart: TSpinEdit
       Left = 579
       Top = 55
       Width = 41
@@ -275,7 +324,6 @@ object frmOptions: TfrmOptions
       MinValue = 1
       TabOrder = 1
       Value = 5
-      ExplicitLeft = 543
     end
   end
 end
