@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, ImageButton, Vcl.StdCtrls,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, ImageButton, Vcl.StdCtrls, System.Math,
   server_handling, paths, gfx_utils, IdComponent, Vcl.Imaging.pngimage,
   IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,
   IdBaseComponent, IdTCPConnection, IdTCPClient, IdHTTP,
@@ -18,7 +18,6 @@ type
     label_title: TLabel;
     IdHTTP1: TIdHTTP;
     IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
-    img_pb: TImage;
     img_track: TImage;
     lbl_status: TLabel;
     DownloadTimer: TTimer;
@@ -27,6 +26,7 @@ type
     img_pbe: TImage;
     lbl_extract_status: TLabel;
     CloseTimer: TTimer;
+    img_pb: TImage;
     procedure shape_titlebarMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
@@ -169,12 +169,22 @@ finally
 end;
 
 procedure TfrmDownloader.FormCreate(Sender: TObject);
+var train_no: integer;
 begin
 Font.Assign(frmLauncher.Font);
 
 btn_close.LoadPNGFromResource('BTN_TB_UP', bsUp);
 btn_close.LoadPNGFromResource('BTN_TB_DOWN', bsDown);
 btn_close.LoadPNGFromResource('BTN_TB_HOVER', bsHover);
+
+img_track.Picture.LoadFromPNGResourceName(0, 'TRACKS');
+img_tracke.Picture.LoadFromPNGResourceName(0, 'TRACKS');
+
+Randomize;
+train_no := System.Math.RandomRange(1, RES_TRAIN_COUNT+1);
+img_pb.Picture.LoadFromPNGResourceName(0, 'TRAIN_'+IntToStr(train_no));
+train_no := System.Math.RandomRange(1, RES_TRAIN_COUNT+1);
+img_pbe.Picture.LoadFromPNGResourceName(0, 'TRAIN_'+IntToStr(train_no));
 
 target_url := '';
 save_to := '';
