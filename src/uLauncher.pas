@@ -617,6 +617,14 @@ if validate_locomotion_path then
    lbl_locomotion_path.Font.Color := clLime;
    end
 else
+if set_locomotion_path() then
+   begin
+   lbl_locomotion_path.Caption := '[ FIXED ]';
+   lbl_locomotion_path.Hint := 'OpenLoco path was invalid - updated to correct path';
+   lbl_locomotion_path.ShowHint := true;
+   lbl_locomotion_path.Font.Color := clLime;
+   end
+else
    begin
    lbl_locomotion_path.Caption := 'FAIL';
    lbl_locomotion_path.Font.Color := $000000D2;
