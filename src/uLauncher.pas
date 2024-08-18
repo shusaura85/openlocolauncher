@@ -103,7 +103,7 @@ type
   end;
 
 const
-  LAUNCHER_VERSION = 'v0.6';
+  LAUNCHER_VERSION = 'v0.7';
   RES_TRAIN_COUNT = 5;      // how many train images are available (res PNG TRAIN_x)
 
 var
