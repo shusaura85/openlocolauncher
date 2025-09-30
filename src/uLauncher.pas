@@ -103,7 +103,7 @@ type
   end;
 
 const
-  LAUNCHER_VERSION = 'v0.7';
+  LAUNCHER_VERSION = 'v0.8';
   RES_TRAIN_COUNT = 5;      // how many train images are available (res PNG TRAIN_x)
 
 var
@@ -255,27 +255,44 @@ end;
 procedure TfrmLauncher.btn_dl_openlocoClick(Sender: TObject);
 var obj:ISuperObject;
     frm: TfrmDownloader;
-    s: string;
+    s, tmp: string;
+    i, x32_index: integer;
+//    x64_index: integer;
 begin
+x32_index := -1;
 
 obj := SO(latest_json);
 
 s := cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path())+'download\';
 if not DirectoryExists(s) then ForceDirectories(s);
 
+for i := 0 to obj.A['assets'].Length-1 do
+    begin
+    tmp := LowerCase( obj.O['assets'].AsArray[i].S['name'] );
+    if (Copy(tmp, 0, 8) = 'openloco') AND (StrPos(PChar(tmp), 'win32.zip')<>nil) then x32_index := i;
+//    if (Copy(tmp, 0, 8) = 'openloco') AND (StrPos(tmp, 'win64.zip')<>nil) then x64_index := i;
+    end;
+
+if x32_index < 0 then
+   begin
+   ShowMessage('Error identifying assets! Unable to download!');
+   exit;
+   end;
+
+
 frm := TfrmDownloader.Create(frmLauncher);
 frm.target_name := obj.AsObject.S['name'];
-frm.target_url := obj.O['assets'].AsArray[0].S['browser_download_url'];
-frm.save_to := s+ obj.O['assets'].AsArray[0].S['name'];
+frm.target_url := obj.O['assets'].AsArray[x32_index].S['browser_download_url'];
+frm.save_to := s+ obj.O['assets'].AsArray[x32_index].S['name'];
 frm.extract_to := cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['name'] + '\';
-frm.zip_size := obj.O['assets'].AsArray[0].I['size'];
+frm.zip_size := obj.O['assets'].AsArray[x32_index].I['size'];
 frm.ShowModal;
 // set new version as active version
 cfg.WriteString('LAUNCHER', 'openloco.active.version', obj.AsObject.S['name']);
 
 s:= obj.AsObject.S['name'];
 cfg.WriteString(s, 'version', obj.AsObject.S['name']);
-cfg.WriteString(s, 'updated', obj.O['assets'].AsArray[0].S['updated_at']);
+cfg.WriteString(s, 'updated', obj.O['assets'].AsArray[x32_index].S['updated_at']);
 cfg.WriteString(s, 'install_path', cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['name'] + '\' );
 cfg.WriteBool(s, 'is_prelease', obj.AsObject.B['prerelease']);
 
