@@ -103,8 +103,12 @@ type
   end;
 
 const
-  LAUNCHER_VERSION = 'v0.8';
+  LAUNCHER_VERSION = 'v0.8.1';
   RES_TRAIN_COUNT = 5;      // how many train images are available (res PNG TRAIN_x)
+
+  OPENLOCO_URL = 'https://api.github.com/repos/OpenLoco/OpenLoco/releases/latest';
+  LAUNCHER_URL = 'https://api.github.com/repos/shusaura85/openlocolauncher/releases/latest';
+  LAUNCHER_SITE = 'https://github.com/shusaura85/openlocolauncher/releases/latest';
 
 var
   frmLauncher: TfrmLauncher;
@@ -281,23 +285,23 @@ if x32_index < 0 then
 
 
 frm := TfrmDownloader.Create(frmLauncher);
-frm.target_name := obj.AsObject.S['name'];
+frm.target_name := obj.AsObject.S['tag_name'];
 frm.target_url := obj.O['assets'].AsArray[x32_index].S['browser_download_url'];
 frm.save_to := s+ obj.O['assets'].AsArray[x32_index].S['name'];
-frm.extract_to := cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['name'] + '\';
+frm.extract_to := cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['tag_name'] + '\';
 frm.zip_size := obj.O['assets'].AsArray[x32_index].I['size'];
 frm.ShowModal;
 // set new version as active version
-cfg.WriteString('LAUNCHER', 'openloco.active.version', obj.AsObject.S['name']);
+cfg.WriteString('LAUNCHER', 'openloco.active.version', obj.AsObject.S['tag_name']);
 
-s:= obj.AsObject.S['name'];
-cfg.WriteString(s, 'version', obj.AsObject.S['name']);
+s:= obj.AsObject.S['tag_name'];
+cfg.WriteString(s, 'version', obj.AsObject.S['tag_name']);
 cfg.WriteString(s, 'updated', obj.O['assets'].AsArray[x32_index].S['updated_at']);
-cfg.WriteString(s, 'install_path', cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['name'] + '\' );
+cfg.WriteString(s, 'install_path', cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['tag_name'] + '\' );
 cfg.WriteBool(s, 'is_prelease', obj.AsObject.B['prerelease']);
 
 // update current version
-openloco_cur_ver := obj.AsObject.S['name'];
+openloco_cur_ver := obj.AsObject.S['tag_name'];
 frm.Free;
 
 panel_no_openloco.Visible := false;
@@ -311,7 +315,7 @@ end;
 
 procedure TfrmLauncher.btn_launcher_updateClick(Sender: TObject);
 begin
-ShellExecute(0, 'open', 'https://github.com/shusaura85/openlocolauncher/releases/latest', nil, nil, SW_SHOWNORMAL);
+ShellExecute(0, 'open', LAUNCHER_SITE, nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TfrmLauncher.btn_optionsClick(Sender: TObject);
@@ -487,7 +491,7 @@ if FileExists( get_launcher_config_path() + 'latest.json') then
       // last checked less than 1 hour ago, use already cached file
       latest_json := System.IOUtils.TFile.ReadAllText( get_launcher_config_path() + 'latest.json', TEncoding.UTF8 );
       obj := SO(latest_json);
-      openloco_new_ver := obj.AsObject.S['name'];
+      openloco_new_ver := obj.AsObject.S['tag_name'];
       lbl_latest_ver.Caption := 'Latest version: ' + openloco_new_ver;
       end;
    end;
@@ -495,12 +499,12 @@ if FileExists( get_launcher_config_path() + 'latest.json') then
 if not no_check then
   begin
     try
-       latest_json := GetUrlContent('https://api.github.com/repos/OpenLoco/OpenLoco/releases/latest');
+       latest_json := GetUrlContent(OPENLOCO_URL);
 
        System.IOUtils.TFile.WriteAllText( get_launcher_config_path() + 'latest.json', latest_json );
 
        obj := SO(latest_json);
-       openloco_new_ver := obj.AsObject.S['name'];
+       openloco_new_ver := obj.AsObject.S['tag_name'];
        lbl_latest_ver.Caption := 'Latest version: ' + openloco_new_ver;
     except
 //       lbl_latest_ver.Caption := 'Latest version: unable to connect';
@@ -525,9 +529,9 @@ if FileExists( get_launcher_config_path() + 'latest-launcher.json') then
       if latest_launcher_json <> '' then
          begin
          obj := SO(latest_launcher_json);
-         if obj.AsObject.Exists('name') then
+         if obj.AsObject.Exists('tag_name') then
             begin
-            s := obj.AsObject.S['name'];
+            s := obj.AsObject.S['tag_name'];
             if s <> LAUNCHER_VERSION then btn_launcher_update.Visible := true
                                      else btn_launcher_update.Visible := false;
             end;
@@ -538,7 +542,7 @@ if FileExists( get_launcher_config_path() + 'latest-launcher.json') then
 if not no_check then
   begin
     try
-       latest_launcher_json := GetUrlContent('https://api.github.com/repos/shusaura85/openlocolauncher/releases/latest');
+       latest_launcher_json := GetUrlContent(LAUNCHER_URL);
 
       if latest_launcher_json <> '' then
          begin
