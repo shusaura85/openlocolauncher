@@ -9,7 +9,8 @@ uses
   IdHeaderList, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, IdBaseComponent,
   IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,
   superdate, superobject, supertimezone, supertypes,
-  gfx_utils, paths, server_handling, ImageButton, iniFiles, ShellApi
+  gfx_utils, paths, server_handling, ImageButton, iniFiles, ShellApi,
+  IdCTypes, IdSSLOpenSSLHeaders
   ;
 
 type
@@ -103,7 +104,7 @@ type
   end;
 
 const
-  LAUNCHER_VERSION = 'v0.8.1';
+  LAUNCHER_VERSION = 'v0.9.7';
   RES_TRAIN_COUNT = 5;      // how many train images are available (res PNG TRAIN_x)
 
   OPENLOCO_URL = 'https://api.github.com/repos/OpenLoco/OpenLoco/releases/latest';
@@ -260,10 +261,11 @@ procedure TfrmLauncher.btn_dl_openlocoClick(Sender: TObject);
 var obj:ISuperObject;
     frm: TfrmDownloader;
     s, tmp: string;
-    i, x32_index: integer;
-//    x64_index: integer;
+    i, x32_index, x64_index: integer;
+    use_arch: integer;
 begin
 x32_index := -1;
+x64_index := -1;
 
 obj := SO(latest_json);
 
@@ -273,31 +275,36 @@ if not DirectoryExists(s) then ForceDirectories(s);
 for i := 0 to obj.A['assets'].Length-1 do
     begin
     tmp := LowerCase( obj.O['assets'].AsArray[i].S['name'] );
-    if (Copy(tmp, 0, 8) = 'openloco') AND (StrPos(PChar(tmp), 'win32.zip')<>nil) then x32_index := i;
-//    if (Copy(tmp, 0, 8) = 'openloco') AND (StrPos(tmp, 'win64.zip')<>nil) then x64_index := i;
+    if (Copy(tmp, 0, 8) = 'openloco') AND (StrPos(PChar(tmp), 'win32.zip')<>nil) AND (StrPos(PChar(tmp), 'symbols')=nil) then x32_index := i;
+    if (Copy(tmp, 0, 8) = 'openloco') AND (StrPos(PChar(tmp), 'x64.zip')<>nil) AND (StrPos(PChar(tmp), 'symbols')=nil) then x64_index := i;
     end;
 
-if x32_index < 0 then
+if (x32_index < 0) AND (x64_index < 0) then
    begin
    ShowMessage('Error identifying assets! Unable to download!');
    exit;
    end;
 
+use_arch := x64_index;
+if use_arch < 0 then use_arch := x32_index;
+
 
 frm := TfrmDownloader.Create(frmLauncher);
 frm.target_name := obj.AsObject.S['tag_name'];
-frm.target_url := obj.O['assets'].AsArray[x32_index].S['browser_download_url'];
-frm.save_to := s+ obj.O['assets'].AsArray[x32_index].S['name'];
-frm.extract_to := cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['tag_name'] + '\';
-frm.zip_size := obj.O['assets'].AsArray[x32_index].I['size'];
+frm.target_url := obj.O['assets'].AsArray[use_arch].S['browser_download_url'];
+frm.save_to := s+ obj.O['assets'].AsArray[use_arch].S['name'];
+//frm.extract_to := cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['tag_name'] + '\';
+frm.extract_to := cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + 'OpenLoco' + '\';
+frm.zip_size := obj.O['assets'].AsArray[use_arch].I['size'];
 frm.ShowModal;
 // set new version as active version
 cfg.WriteString('LAUNCHER', 'openloco.active.version', obj.AsObject.S['tag_name']);
 
-s:= obj.AsObject.S['tag_name'];
+s:= 'OpenLoco'; //obj.AsObject.S['tag_name'];
 cfg.WriteString(s, 'version', obj.AsObject.S['tag_name']);
-cfg.WriteString(s, 'updated', obj.O['assets'].AsArray[x32_index].S['updated_at']);
-cfg.WriteString(s, 'install_path', cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['tag_name'] + '\' );
+cfg.WriteString(s, 'updated', obj.O['assets'].AsArray[use_arch].S['updated_at']);
+//cfg.WriteString(s, 'install_path', cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + obj.AsObject.S['tag_name'] + '\' );
+cfg.WriteString(s, 'install_path', cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + 'OpenLoco' + '\' );
 cfg.WriteBool(s, 'is_prelease', obj.AsObject.B['prerelease']);
 
 // update current version
@@ -344,7 +351,8 @@ if same_dir then
    end
 else
    begin
-   path := IncludeTrailingPathDelimiter( cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + cfg.ReadString('LAUNCHER', 'openloco.active.version', '') );
+//   path := IncludeTrailingPathDelimiter( cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + cfg.ReadString('LAUNCHER', 'openloco.active.version', '') );
+   path := IncludeTrailingPathDelimiter( cfg.ReadString('LAUNCHER', 'openloco.base.path', get_launcher_config_path()) + 'OpenLoco' );
    end;
 
 exe := path + 'openloco.exe';
@@ -697,9 +705,11 @@ else
    act_ver := cfg.ReadString('LAUNCHER', 'openloco.active.version', '');
    if act_ver <> '' then
        begin
-       openloco_exe := ol_install_in + act_ver + '\openloco.exe';
+//       openloco_exe := ol_install_in + act_ver + '\openloco.exe';
+       openloco_exe := ol_install_in + 'OpenLoco' + '\openloco.exe';
        openloco_ver := act_ver;
-       openloco_ver_path := ol_install_in+act_ver + '\';
+//       openloco_ver_path := ol_install_in+act_ver + '\';
+       openloco_ver_path := ol_install_in+'OpenLoco' + '\';
 
        if not FileExists(openloco_exe) then
           begin

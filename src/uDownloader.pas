@@ -123,8 +123,8 @@ var zip : TZipFile;
     perc_done: Integer;
 begin
 ExtractTimer.Enabled := false;
+zip := TZipFile.Create;
 try
-  zip := TZipFile.Create;
   zip.Open(save_to, zmRead);
 
   if not DirectoryExists(extract_to) then ForceDirectories(extract_to);

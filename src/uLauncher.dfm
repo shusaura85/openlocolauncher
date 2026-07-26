@@ -15,7 +15,6 @@ object frmLauncher: TfrmLauncher
   Font.Height = -16
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -24,7 +23,6 @@ object frmLauncher: TfrmLauncher
   DesignSize = (
     804
     515)
-  PixelsPerInch = 96
   TextHeight = 19
   object shape_window_frame: TShape
     Left = 0
@@ -467,7 +465,6 @@ object frmLauncher: TfrmLauncher
     OnWork = IdHTTP1Work
     OnWorkBegin = IdHTTP1WorkBegin
     OnWorkEnd = IdHTTP1WorkEnd
-    AllowCookies = True
     HandleRedirects = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
